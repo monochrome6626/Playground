@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
+from app.models.search_request import SearchRequest
 from app.repositories.match_repository import MatchRepository
 from app.schemas.match import MatchDetailResponse, MatchListResponse, MatchResponse
 
@@ -11,6 +12,10 @@ match_repository = MatchRepository()
 
 @router.get("", response_model=MatchListResponse)
 def list_matches(search_request_id: str, db: Session = Depends(get_db)) -> MatchListResponse:
+    search = db.get(SearchRequest, search_request_id)
+    if search is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Search request not found.")
+
     matches = match_repository.list_by_search(db, search_request_id)
     return MatchListResponse(
         items=[MatchResponse.model_validate(item) for item in matches],

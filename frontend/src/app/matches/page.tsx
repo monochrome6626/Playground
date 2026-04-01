@@ -24,7 +24,20 @@ export default async function MatchesPage({ searchParams }: MatchesPageProps) {
     );
   }
 
-  const [search, matches] = await Promise.all([getSearch(searchId), getMatches(searchId)]);
+  let search;
+  let matches;
+  try {
+    [search, matches] = await Promise.all([getSearch(searchId), getMatches(searchId)]);
+  } catch (_error) {
+    return (
+      <section className="section">
+        <h2>Search Status</h2>
+        <div className="card">
+          <p>Search data was not found. Please create a new search from the Search page.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -52,7 +65,7 @@ export default async function MatchesPage({ searchParams }: MatchesPageProps) {
           </div>
         ) : null}
       </section>
-      <MatchTable matches={matches.items} />
+      <MatchTable matches={matches.items} searchId={searchId} />
       <MapView />
     </>
   );

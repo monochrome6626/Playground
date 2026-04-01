@@ -1,10 +1,13 @@
+import Link from "next/link";
+
 import { Match } from "@/lib/types";
 
 type MatchTableProps = {
   matches: Match[];
+  searchId: string;
 };
 
-export function MatchTable({ matches }: MatchTableProps) {
+export function MatchTable({ matches, searchId }: MatchTableProps) {
   return (
     <section className="section">
       <h2>Candidate Matches</h2>
@@ -17,12 +20,13 @@ export function MatchTable({ matches }: MatchTableProps) {
             <th>Score</th>
             <th>Azimuth Diff</th>
             <th>Altitude Diff</th>
+            <th>Detail</th>
           </tr>
         </thead>
         <tbody>
           {matches.length === 0 ? (
             <tr>
-              <td colSpan={6}>No matches found for the selected conditions.</td>
+              <td colSpan={7}>No matches found for the selected conditions.</td>
             </tr>
           ) : null}
           {matches.map((match) => (
@@ -33,6 +37,11 @@ export function MatchTable({ matches }: MatchTableProps) {
               <td>{match.score.toFixed(1)}</td>
               <td>{match.azimuth_diff_deg.toFixed(2)} deg</td>
               <td>{match.altitude_diff_deg.toFixed(2)} deg</td>
+              <td>
+                <Link className="button secondary" href={`/matches/${match.id}?searchId=${searchId}`}>
+                  View
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

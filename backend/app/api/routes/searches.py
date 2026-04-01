@@ -12,12 +12,23 @@ from app.services.search_job_runner import search_job_runner
 
 router = APIRouter(prefix="/searches", tags=["searches"])
 search_repository = SearchRequestRepository()
+EVENT_TO_BODY = {
+    "sunrise": "sun",
+    "sunset": "sun",
+    "moonrise": "moon",
+    "moonset": "moon",
+}
 
 
 @router.post("", response_model=SearchRequestResponse, status_code=201)
 def create_search(payload: SearchRequestCreate, db: Session = Depends(get_db)) -> SearchRequestResponse:
-    if payload.date_from > payload.date_to:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="date_from must be earlier than date_to.")
+    body_set = set(payload.body_types)
+    incompatible = [event for event in payload.event_types if EVENT_TO_BODY[event] not in body_set]
+    if incompatible:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"event_types incompatible with body_types: {', '.join(incompatible)}",
+        )
 
     spot = db.get(Spot, payload.spot_id)
     if spot is None:

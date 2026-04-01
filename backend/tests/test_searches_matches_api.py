@@ -111,3 +111,40 @@ def test_create_search_and_fetch_matches() -> None:
     assert matches_payload["search_request_id"] == search_id
     assert isinstance(matches_payload["items"], list)
     assert matches_payload["total"] >= 0
+
+
+def test_rejects_too_long_date_range() -> None:
+    payload = {
+        "spot_id": "spot-kasai",
+        "landmark_id": "landmark-skytree",
+        "date_from": date(2026, 1, 1).isoformat(),
+        "date_to": date(2028, 1, 1).isoformat(),
+        "body_types": ["sun"],
+        "event_types": ["sunrise"],
+        "azimuth_tolerance_deg": 1.0,
+        "altitude_tolerance_deg": 1.0,
+        "interval_sec": 60,
+    }
+    response = client.post("/api/searches", json=payload)
+    assert response.status_code == 422
+
+
+def test_rejects_incompatible_body_event_types() -> None:
+    payload = {
+        "spot_id": "spot-kasai",
+        "landmark_id": "landmark-skytree",
+        "date_from": date(2026, 2, 1).isoformat(),
+        "date_to": date(2026, 2, 1).isoformat(),
+        "body_types": ["sun"],
+        "event_types": ["moonrise"],
+        "azimuth_tolerance_deg": 1.0,
+        "altitude_tolerance_deg": 1.0,
+        "interval_sec": 60,
+    }
+    response = client.post("/api/searches", json=payload)
+    assert response.status_code == 400
+
+
+def test_matches_returns_404_for_unknown_search() -> None:
+    response = client.get("/api/matches?search_request_id=search-does-not-exist")
+    assert response.status_code == 404

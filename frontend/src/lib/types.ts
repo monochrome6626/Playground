@@ -54,3 +54,20 @@ export type Match = {
   altitude_diff_deg: number;
   weather_summary?: string | null;
 };
+
+export type MatchDetail = {
+  id: string;
+  spot_name: string;
+  landmark_name: string;
+  body: string;
+  event_type: string;
+  observed_at: string;
+  body_azimuth_deg: number;
+  body_altitude_deg: number;
+  landmark_azimuth_deg: number;
+  landmark_altitude_deg: number;
+  azimuth_diff_deg: number;
+  altitude_diff_deg: number;
+  score: number;
+  weather_summary?: string | null;
+};

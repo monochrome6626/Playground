@@ -46,6 +46,21 @@ export function SearchForm({ spots, landmarks }: SearchFormProps) {
     setIsSubmitting(true);
     setError(null);
 
+    const from = new Date(dateFrom);
+    const to = new Date(dateTo);
+    const rangeDays = Math.floor((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (rangeDays < 0) {
+      setError("date_from must be earlier than or equal to date_to.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (rangeDays > 366) {
+      setError("Date range must be 366 days or fewer.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const payload: SearchRequestCreate = {
       spot_id: spotId,
       landmark_id: landmarkId,
@@ -63,8 +78,9 @@ export function SearchForm({ spots, landmarks }: SearchFormProps) {
       startTransition(() => {
         router.push(`/matches?searchId=${created.id}`);
       });
-    } catch (submitError) {
-      setError("Failed to create search request. Please verify that backend and database are running.");
+    } catch (submitError: unknown) {
+      const message = submitError instanceof Error ? submitError.message : "Failed to create search request.";
+      setError(message);
       setIsSubmitting(false);
     }
   }
@@ -124,10 +140,12 @@ export function SearchForm({ spots, landmarks }: SearchFormProps) {
               className="input"
               type="number"
               min={10}
+              max={3600}
               step={10}
               value={intervalSec}
               onChange={(e) => setIntervalSec(Number(e.target.value))}
             />
+            <p>10-3600 seconds</p>
           </div>
           <div className="card">
             <label className="label" htmlFor="azTol">
@@ -138,10 +156,12 @@ export function SearchForm({ spots, landmarks }: SearchFormProps) {
               className="input"
               type="number"
               min={0.01}
+              max={180}
               step={0.01}
               value={azimuthTolerance}
               onChange={(e) => setAzimuthTolerance(Number(e.target.value))}
             />
+            <p>0.01-180 degrees</p>
           </div>
           <div className="card">
             <label className="label" htmlFor="altTol">
@@ -152,10 +172,12 @@ export function SearchForm({ spots, landmarks }: SearchFormProps) {
               className="input"
               type="number"
               min={0.01}
+              max={90}
               step={0.01}
               value={altitudeTolerance}
               onChange={(e) => setAltitudeTolerance(Number(e.target.value))}
             />
+            <p>0.01-90 degrees</p>
           </div>
         </div>
         <div className="actions">
