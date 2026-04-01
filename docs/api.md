@@ -36,6 +36,6 @@ Returns detailed geometry values for one match.
 
 ## API evolution notes
 
-- current scaffold returns fixtures so the frontend can be built in parallel
-- next step is replacing fixtures with repository-backed handlers
+- spots and landmarks endpoints are DB-backed via SQLAlchemy repositories
+- searches and matches remain fixture-backed in the current iteration
 - final search flow should enqueue work instead of calculating inside the request cycle

@@ -16,3 +16,5 @@ class SpotCreate(SpotBase):
 
 class SpotResponse(SpotBase):
     id: str
+
+    model_config = {"from_attributes": True}

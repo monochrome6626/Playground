@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import Date, Float, Integer, JSON, String
+from sqlalchemy import Date, Float, ForeignKey, Integer, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -10,8 +10,8 @@ class SearchRequest(Base):
     __tablename__ = "search_requests"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    spot_id: Mapped[str] = mapped_column(String(64), nullable=False)
-    landmark_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    spot_id: Mapped[str] = mapped_column(ForeignKey("spots.id"), nullable=False)
+    landmark_id: Mapped[str] = mapped_column(ForeignKey("landmarks.id"), nullable=False)
     date_from: Mapped[date] = mapped_column(Date, nullable=False)
     date_to: Mapped[date] = mapped_column(Date, nullable=False)
     body_types: Mapped[list[str]] = mapped_column(JSON, nullable=False)

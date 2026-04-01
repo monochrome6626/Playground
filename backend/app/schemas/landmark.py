@@ -9,3 +9,5 @@ class LandmarkResponse(BaseModel):
     base_elevation_m: float | None = None
     height_m: float
     target_point_type: str
+
+    model_config = {"from_attributes": True}

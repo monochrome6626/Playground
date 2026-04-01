@@ -5,7 +5,7 @@
 - Docker Desktop or a local PostgreSQL + Python + Node toolchain
 - PostgreSQL 17 installed if running without Docker
 - Node.js 20+
-- Python 3.12+
+- Python 3.10+
 
 ## Environment variables
 
@@ -33,6 +33,8 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+python -m alembic upgrade head
+python -m app.scripts.seed_landmarks
 uvicorn app.main:app --reload
 ```
 
@@ -46,7 +48,7 @@ npm run dev
 
 ## Immediate next tasks
 
-1. install frontend dependencies and verify the app starts
-2. replace fixture routes with database-backed repositories
-3. add Alembic migrations
-4. implement real astronomy calculations and tests
+1. implement real astronomy calculations and tests
+2. replace fixture search/match responses with DB-backed handlers
+3. add weather cache and asynchronous search execution
+4. introduce PostGIS columns and map-aware query utilities

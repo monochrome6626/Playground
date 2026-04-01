@@ -1,27 +1,24 @@
-from fastapi import APIRouter
+from uuid import uuid4
 
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.core.db import get_db
+from app.repositories.spot_repository import SpotRepository
 from app.schemas.spot import SpotCreate, SpotResponse
 
 router = APIRouter(prefix="/spots", tags=["spots"])
 
-_SPOT_FIXTURES = [
-    SpotResponse(
-        id="spot-kasai-rinkai",
-        name="Kasai Rinkai Park",
-        latitude=35.6444,
-        longitude=139.8611,
-        elevation_m=3.2,
-        prefecture="Tokyo",
-        memo="Good candidate for sunrise shots toward Tokyo Bay.",
-    )
-]
+spot_repository = SpotRepository()
 
 
 @router.get("", response_model=list[SpotResponse])
-def list_spots() -> list[SpotResponse]:
-    return _SPOT_FIXTURES
+def list_spots(db: Session = Depends(get_db)) -> list[SpotResponse]:
+    spots = spot_repository.list_spots(db)
+    return [SpotResponse.model_validate(item) for item in spots]
 
 
 @router.post("", response_model=SpotResponse, status_code=201)
-def create_spot(payload: SpotCreate) -> SpotResponse:
-    return SpotResponse(id="spot-new", **payload.model_dump())
+def create_spot(payload: SpotCreate, db: Session = Depends(get_db)) -> SpotResponse:
+    spot = spot_repository.create_spot(db, spot_id=f"spot-{uuid4().hex[:12]}", payload=payload)
+    return SpotResponse.model_validate(spot)
