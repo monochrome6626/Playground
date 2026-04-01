@@ -97,9 +97,25 @@ main {
   font-weight: 600;
 }
 
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .button.secondary {
   border-color: var(--line);
   background: transparent;
+  color: var(--ink);
+}
+
+.input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  background: #fff;
   color: var(--ink);
 }
 

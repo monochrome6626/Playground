@@ -32,6 +32,18 @@ export type SearchRequest = {
   status: string;
 };
 
+export type SearchRequestCreate = {
+  spot_id: string;
+  landmark_id: string;
+  date_from: string;
+  date_to: string;
+  body_types: string[];
+  event_types: string[];
+  azimuth_tolerance_deg: number;
+  altitude_tolerance_deg: number;
+  interval_sec: number;
+};
+
 export type Match = {
   id: string;
   observed_at: string;

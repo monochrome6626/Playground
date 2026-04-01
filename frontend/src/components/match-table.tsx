@@ -20,6 +20,11 @@ export function MatchTable({ matches }: MatchTableProps) {
           </tr>
         </thead>
         <tbody>
+          {matches.length === 0 ? (
+            <tr>
+              <td colSpan={6}>No matches found for the selected conditions.</td>
+            </tr>
+          ) : null}
           {matches.map((match) => (
             <tr key={match.id}>
               <td>{new Date(match.observed_at).toLocaleString("ja-JP")}</td>

@@ -2,8 +2,29 @@ import { MapView } from "@/components/map-view";
 import { MatchTable } from "@/components/match-table";
 import { getMatches, getSearch } from "@/lib/api";
 
-export default async function MatchesPage() {
-  const [search, matches] = await Promise.all([getSearch(), getMatches()]);
+type MatchesPageProps = {
+  searchParams?: Promise<{
+    searchId?: string | string[];
+  }>;
+};
+
+export default async function MatchesPage({ searchParams }: MatchesPageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const searchIdValue = resolvedSearchParams.searchId;
+  const searchId = Array.isArray(searchIdValue) ? searchIdValue[0] : searchIdValue;
+
+  if (!searchId) {
+    return (
+      <section className="section">
+        <h2>Search Status</h2>
+        <div className="card">
+          <p>Create a search from the Search page to view live match results.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const [search, matches] = await Promise.all([getSearch(searchId), getMatches(searchId)]);
 
   return (
     <>

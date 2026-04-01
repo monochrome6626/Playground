@@ -1,9 +1,26 @@
-import { Landmark, Match, SearchRequest, Spot } from "./types";
+import { Landmark, Match, SearchRequest, SearchRequestCreate, Spot } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<T>;
+}
+
+async function postJson<T>(path: string, payload: unknown): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
     cache: "no-store",
   });
 
@@ -28,4 +45,8 @@ export async function getMatches(searchRequestId = "search-demo"): Promise<{ ite
 
 export async function getSearch(searchId = "search-demo"): Promise<SearchRequest> {
   return fetchJson<SearchRequest>(`/api/searches/${searchId}`);
+}
+
+export async function createSearch(payload: SearchRequestCreate): Promise<SearchRequest> {
+  return postJson<SearchRequest>("/api/searches", payload);
 }

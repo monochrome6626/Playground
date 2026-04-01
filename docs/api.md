@@ -20,7 +20,7 @@ Returns managed landmarks.
 
 ### `POST /api/searches`
 
-Creates a search request and queues the alignment calculation.
+Creates a search request and executes alignment calculation synchronously.
 
 ### `GET /api/searches/{search_id}`
 
@@ -37,5 +37,6 @@ Returns detailed geometry values for one match.
 ## API evolution notes
 
 - spots and landmarks endpoints are DB-backed via SQLAlchemy repositories
-- searches and matches remain fixture-backed in the current iteration
-- final search flow should enqueue work instead of calculating inside the request cycle
+- searches and matches endpoints are DB-backed in the current iteration
+- current search execution is synchronous in the request cycle
+- final production flow should enqueue search execution in a background worker

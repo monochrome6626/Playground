@@ -18,3 +18,5 @@ class SearchRequestCreate(BaseModel):
 class SearchRequestResponse(SearchRequestCreate):
     id: str
     status: str
+
+    model_config = {"from_attributes": True}

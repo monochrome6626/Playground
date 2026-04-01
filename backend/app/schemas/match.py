@@ -13,6 +13,8 @@ class MatchResponse(BaseModel):
     altitude_diff_deg: float
     weather_summary: str | None = None
 
+    model_config = {"from_attributes": True}
+
 
 class MatchListResponse(BaseModel):
     items: list[MatchResponse]
@@ -34,3 +36,4 @@ class MatchDetailResponse(BaseModel):
     azimuth_diff_deg: float
     altitude_diff_deg: float
     score: float
+    weather_summary: str | None = None

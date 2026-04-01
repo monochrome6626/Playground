@@ -27,11 +27,11 @@ def override_get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
 def setup_module() -> None:
+    app.dependency_overrides[get_db] = override_get_db
     Base.metadata.create_all(bind=engine)
     with TestingSessionLocal() as db:
         db.add(
@@ -50,7 +50,7 @@ def setup_module() -> None:
 
 def teardown_module() -> None:
     Base.metadata.drop_all(bind=engine)
-    app.dependency_overrides.clear()
+    app.dependency_overrides.pop(get_db, None)
 
 
 def test_create_and_list_spot() -> None:
