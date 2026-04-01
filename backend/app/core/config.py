@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     app_name: str = "AstroShot Planner API"
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
+    search_worker_count: int = 1
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/astroshot"
     cors_origins: list[str] | str = Field(default="http://localhost:3000", validation_alias="BACKEND_CORS_ORIGINS")
 

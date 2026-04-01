@@ -46,6 +46,11 @@ export default async function MatchesPage({ searchParams }: MatchesPageProps) {
             <strong>{search.interval_sec} sec</strong>
           </div>
         </div>
+        {search.status !== "completed" ? (
+          <div className="card" style={{ marginTop: 16 }}>
+            <p>Search is running in the background. Reload this page in a few seconds to fetch updated matches.</p>
+          </div>
+        ) : null}
       </section>
       <MatchTable matches={matches.items} />
       <MapView />

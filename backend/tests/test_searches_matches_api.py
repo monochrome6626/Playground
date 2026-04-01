@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from datetime import date
+from time import sleep
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -7,10 +8,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.db import Base, get_db
+from app.core.db import SessionLocal
 from app.main import app
 from app import models  # noqa: F401
 from app.models.landmark import Landmark
 from app.models.spot import Spot
+from app.services.search_job_runner import search_job_runner
 
 
 engine = create_engine(
@@ -35,6 +38,7 @@ client = TestClient(app)
 
 def setup_module() -> None:
     app.dependency_overrides[get_db] = override_get_db
+    search_job_runner.configure_session_factory(TestingSessionLocal)
     Base.metadata.create_all(bind=engine)
     with TestingSessionLocal() as db:
         db.add(
@@ -65,6 +69,7 @@ def setup_module() -> None:
 def teardown_module() -> None:
     Base.metadata.drop_all(bind=engine)
     app.dependency_overrides.pop(get_db, None)
+    search_job_runner.configure_session_factory(SessionLocal)
 
 
 def test_create_search_and_fetch_matches() -> None:
@@ -84,12 +89,19 @@ def test_create_search_and_fetch_matches() -> None:
     assert create_response.status_code == 201
     created = create_response.json()
     assert created["id"].startswith("search-")
-    assert created["status"] == "completed"
+    assert created["status"] == "queued"
 
     search_id = created["id"]
-    search_response = client.get(f"/api/searches/{search_id}")
-    assert search_response.status_code == 200
-    search = search_response.json()
+    search = None
+    for _ in range(40):
+        search_response = client.get(f"/api/searches/{search_id}")
+        assert search_response.status_code == 200
+        search = search_response.json()
+        if search["status"] in {"completed", "failed"}:
+            break
+        sleep(0.05)
+
+    assert search is not None
     assert search["id"] == search_id
     assert search["status"] == "completed"
 
